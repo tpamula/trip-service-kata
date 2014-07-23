@@ -10,27 +10,12 @@ namespace TripServiceKata.Trip
         {
             List<Trip> tripList = new List<Trip>();
             User.User loggedUser = GetLoggedUser();
-            bool isFriend = false;
-            if (loggedUser != null)
-            {
-                foreach (User.User friend in user.GetFriends())
-                {
-                    if (friend.Equals(loggedUser))
-                    {
-                        isFriend = true;
-                        break;
-                    }
-                }
-                if (isFriend)
-                {
-                    tripList = TripDAO.FindTripsByUser(user);
-                }
-                return tripList;
-            }
-            else
-            {
-                throw new UserNotLoggedInException();
-            }
+
+            if (loggedUser == null) throw new UserNotLoggedInException();
+
+            return loggedUser.IsFriend(user)
+                ? TripDAO.FindTripsByUser(user)
+                : new List<Trip>();
         }
 
         protected virtual User.User GetLoggedUser()
